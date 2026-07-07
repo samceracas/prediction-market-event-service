@@ -139,6 +139,26 @@ Because the upsert is keyed by id, running it again with data trade-service alre
 has is a no-op. This is what makes the reconciliation pull safe to run on every
 reconnect instead of trying to track exactly what was missed.
 
+## Known limitations
+
+**`/event/sync/full` does not scale past a certain data size.** It returns every
+event, market, and asset in one unpaginated response, and trade-service calls it in
+full on every boot and every RabbitMQ reconnect. That is fine for a small dataset, but
+once there are thousands of events with their nested markets and assets, this endpoint
+will get slow, and most of what it sends back on any given call never actually
+changed since the last sync.
+
+Planned fix: an incremental version of this endpoint, for example filtering by
+`updated_at` or a cursor, so trade-service only has to pull what changed since its
+last successful sync instead of the entire dataset every time. Not fixed yet, noting
+it here so it is a known tradeoff and not a silent gap.
+
+**`/event/sync/full` is not private.** There is no auth on it, anyone who knows the
+URL can pull a full dump of every event, market, and asset. This was a quick way to
+get the reconciliation flow working for a prototype, not a decision meant to hold up
+outside of one. Planned fix: some form of service-to-service auth (a shared secret
+header at minimum) before this is exposed to real traffic.
+
 ## Endpoints
 
 - `POST /event/create` - create an event with its markets and assets
