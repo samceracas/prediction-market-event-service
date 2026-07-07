@@ -150,8 +150,7 @@ changed since the last sync.
 
 Planned fix: an incremental version of this endpoint, for example filtering by
 `updated_at` or a cursor, so trade-service only has to pull what changed since its
-last successful sync instead of the entire dataset every time. Not fixed yet, noting
-it here so it is a known tradeoff and not a silent gap.
+last successful sync instead of the entire dataset every time. Not fixed yet, but I'am actively working on this project in my free time to implement solutions to this.
 
 **`/event/sync/full` is not private.** There is no auth on it, anyone who knows the
 URL can pull a full dump of every event, market, and asset. This was a quick way to
